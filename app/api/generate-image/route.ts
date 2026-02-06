@@ -1,12 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
 import OpenAI from 'openai';
 
-const openai = new OpenAI({
-  apiKey: process.env.OPENAI_API_KEY,
-});
-
 export async function POST(req: NextRequest) {
   try {
+    const openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+    
     const { mealName, mealDescription } = await req.json();
 
     const prompt = `${mealName}の美味しそうな料理写真。${mealDescription}。レストラン品質、プロの食品写真、自然光、美しい盛り付け`;
@@ -19,7 +19,11 @@ export async function POST(req: NextRequest) {
       quality: 'standard',
     });
 
-    const imageUrl = response.data[0].url;
+    const imageUrl = response.data?.[0]?.url;
+    
+    if (!imageUrl) {
+      throw new Error('No image URL returned from API');
+    }
 
     return NextResponse.json({ imageUrl });
   } catch (error: any) {
