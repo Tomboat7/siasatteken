@@ -1,5 +1,7 @@
 import { UserSettings, MealPlan } from '@/app/types';
 
+const MAX_HISTORY_ENTRIES = 100;
+
 export function getUserSettings(): UserSettings {
   if (typeof window === 'undefined') {
     return getDefaultSettings();
@@ -39,8 +41,8 @@ export function saveMealToHistory(mealPlan: MealPlan): void {
   if (typeof window !== 'undefined') {
     const history = getMealHistory();
     history.unshift(mealPlan);
-    // Keep only last 100 entries
-    if (history.length > 100) {
+    // Keep only last MAX_HISTORY_ENTRIES entries
+    if (history.length > MAX_HISTORY_ENTRIES) {
       history.pop();
     }
     localStorage.setItem('mealHistory', JSON.stringify(history));
